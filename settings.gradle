@@ -1,0 +1,3 @@
+rootProject.name = "Hid测试"
+include ':app'
+include ':mylibrary'
