@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.wangxiaobao.sdk.hid.test"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -29,5 +29,7 @@ android {
 }
 
 dependencies {
+    implementation 'me.jahnen:libaums:0.8.0'
     implementation project(path: ':mylibrary')
+//    implementation 'com.github.2628748861:hid_sdk:1.0.1'
 }

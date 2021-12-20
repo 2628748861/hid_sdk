@@ -1,3 +1,3 @@
-rootProject.name = "Hid测试"
+rootProject.name = "HidSDK测试"
 include ':app'
 include ':mylibrary'

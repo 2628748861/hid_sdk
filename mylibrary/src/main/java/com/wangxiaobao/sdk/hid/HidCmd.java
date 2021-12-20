@@ -2,93 +2,148 @@ package com.wangxiaobao.sdk.hid;
 
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
-import android.hardware.usb.UsbInterface;
-import android.hardware.usb.UsbManager;
-import android.text.TextUtils;
-import android.util.Log;
+import com.wangxiaobao.sdk.hid.engine.adapter.BooleanAdapter;
+import com.wangxiaobao.sdk.hid.engine.adapter.StringAdapter;
+import com.wangxiaobao.sdk.hid.engine.CallBackHandler;
+import com.wangxiaobao.sdk.hid.engine.Callback;
+import com.wangxiaobao.sdk.hid.engine.HidEngine;
+import com.wangxiaobao.sdk.hid.engine.OpCode;
+import com.wangxiaobao.sdk.hid.engine.request.RequestData;
 
 public class HidCmd implements IHidCmd{
-    private String TAG="HidSDK";
-    private String OP_HEAD="05";
-    private UsbManager mUsbManager;
-    private UsbDevice usbDevice;
+
+    private HidEngine hidEngine;
     public HidCmd(Context mContext, UsbDevice usbDevice){
-        this.mUsbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
-        this.usbDevice=usbDevice;
-    }
-    private String execute(UsbDevice usbDevice,String cmd,String data){
-        if(mUsbManager==null||usbDevice==null|| TextUtils.isEmpty(cmd)||TextUtils.isEmpty(data)){
-            Log.e(TAG,"执行hid命令失败,参数有误.mUsbManager:"+mUsbManager+",usbDevice:"+usbDevice+",cmd:"+cmd+",data:"+data);
-            return "";
-        }
-        UsbInterface usbInterface = usbDevice.getInterface(0);
-        UsbEndpoint inEndpoint = usbInterface.getEndpoint(0);  //读数据节点
-        UsbEndpoint outEndpoint = usbInterface.getEndpoint(1); //写数据节点
-        UsbDeviceConnection connection = mUsbManager.openDevice(usbDevice);
-        connection.claimInterface(usbInterface, true);
-        byte[] byte2= HexUtil.hexStringToBytes(cmd+ (TextUtils.isEmpty(data)?"": HexUtil.byteArrToHex(data.getBytes())));
-        connection.bulkTransfer(outEndpoint, byte2, byte2.length, 5000);
-        byte[] receiveytes = new byte[64];
-        connection.bulkTransfer(inEndpoint, receiveytes, receiveytes.length, 10000);
-        String result= HexUtil.byteArrToHex(receiveytes);
-        Log.e(TAG,"["+cmd+"]执行结果:"+result);
-        return result;
+        this.hidEngine =new HidEngine(mContext,usbDevice);
     }
 
     @Override
-    public boolean setSn(String sn) {
-        String result= execute(usbDevice,OP_HEAD+"07",sn);
-        return !TextUtils.isEmpty(result)&&result.startsWith(OP_HEAD);
+    public void setSn(String sn,Callback<Boolean> callback) {
+        //todo 已验证
+        this.hidEngine.send(
+                new RequestData.Builder()
+                        .cmd(OpCode.CMD_SET_SN)
+                        .payload(sn.getBytes())
+                        .build(),new CallBackHandler(callback,new BooleanAdapter()));
     }
 
     @Override
-    public String getSn() {
-        String result= execute(usbDevice,OP_HEAD+"09",null);
-        return HexUtil.hexStringToAscill(result.substring(OP_HEAD.length()));
+    public void getSn(Callback<String> callback) {
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                        .cmd(OpCode.CMD_GET_SN)
+                        .build(),new CallBackHandler(callback,new StringAdapter()));
     }
 
     @Override
-    public boolean setTime(long timestamp) {
-        String result= execute(usbDevice,OP_HEAD+"0e",Long.toHexString(timestamp/1000l));
-        return !TextUtils.isEmpty(result)&&result.startsWith(OP_HEAD);
+    public void setTime(long unixTimestamp,Callback<Boolean> callback){
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_SET_TIME)
+                .payload((unixTimestamp+"").getBytes())
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
+
     }
 
 
     @Override
-    public String getTime() {
-        String result= execute(usbDevice,OP_HEAD+"0f",null);
-        return HexUtil.hexStringToAscill(result.substring(OP_HEAD.length()));
+    public void getTime(Callback<String> callback){
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_GET_TIME)
+                .build(),new CallBackHandler(callback,new StringAdapter()));
     }
 
     @Override
-    public void reboot() {
-        execute(usbDevice,OP_HEAD+"10",null);
+    public void reboot(Callback<Boolean> callback) {
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_REBOOT)
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
     }
 
     @Override
-    public void resumeFactory() {
-        execute(usbDevice,OP_HEAD+"11",null);
+    public void resumeFactory(Callback<Boolean> callback) {
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_RESUMEFACTORY)
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
     }
 
     @Override
-    public boolean setLight(boolean open) {
-        String result= execute(usbDevice,OP_HEAD+"12",open?"01":"00");
-        return !TextUtils.isEmpty(result)&&result.startsWith(OP_HEAD);
+    public void setLight(boolean open, Callback<Boolean> callback) {
+        //todo 已验证
+        this.hidEngine.send(
+                new RequestData.Builder()
+                        .cmd(OpCode.CMD_SET_LIGHT)
+                        .payload(new byte[]{(byte) (open ? 0x31 : 0x30)})
+                        .build(),new CallBackHandler(callback,new BooleanAdapter()));
     }
 
     @Override
-    public String getRkVersion() {
-        String result= execute(usbDevice,OP_HEAD+"15",null);
-        return HexUtil.hexStringToAscill(result.substring(OP_HEAD.length()));
+    public void getRkVersion(Callback<String> callback) {
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_GET_RK_VERSION)
+                .build(),new CallBackHandler(callback,new StringAdapter()));
     }
 
     @Override
-    public String getEspVersion() {
-        String result= execute(usbDevice,OP_HEAD+"16",null);
-        return HexUtil.hexStringToAscill(result.substring(OP_HEAD.length()));
+    public void getEspVersion(Callback<String> callback){
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_GET_ESP_VERSION)
+                .build(),new CallBackHandler(callback,new StringAdapter()));
     }
+
+    @Override
+    public void testMic(Callback<Boolean> callback){
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_MIC_TEST)
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
+    }
+
+
+    @Override
+    public void testLight(Callback<Boolean> callback){
+        //todo 已验证
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_LIGHT_TEST)
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
+    }
+
+    @Override
+    public void getMac(Callback<String> callback){
+        //todo 已验证  (有问题，当没有蓝牙连接时,返回错误码位01)
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_GET_BLE_MAC)
+                .build(),new CallBackHandler(callback,new StringAdapter()));
+    }
+
+    @Override
+    public void wifi(boolean open,Callback<Boolean> callback) {
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_OPEN_WIFI)
+                .payload(new byte[]{(byte) (open ? 0x31 : 0x30)})
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
+    }
+
+    @Override
+    public void connectWifi(String ssid, String password,Callback<Boolean> callback) {
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_CONNECT_WIFI)
+                .payload((ssid+","+password).getBytes())
+                .build(),new CallBackHandler(callback,new BooleanAdapter()));
+    }
+
+    @Override
+    public void getCurrenWifi(Callback<String> callback) {
+        this.hidEngine.send(new RequestData.Builder()
+                .cmd(OpCode.CMD_get_WIFI)
+                .build(),new CallBackHandler(callback,new StringAdapter()));
+    }
+
 
 
 }
