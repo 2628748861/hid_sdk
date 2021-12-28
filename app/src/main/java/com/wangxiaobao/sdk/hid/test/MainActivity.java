@@ -119,7 +119,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
             UsbDevice usbDevice=storageDevice.getUsbDevice();
             logMessage("usbDevice:"+usbDevice.getSerialNumber());
-            initCmd(usbDevice);
+//            initCmd(usbDevice);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    initCmd(usbDevice);
+                }
+            }).start();
         }
     }
 
@@ -300,17 +306,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 listDialog.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        hidCmd.setLight(which == 0, new Callback<Boolean>() {
-                            @Override
-                            public void onSuccess(@NonNull @NotNull Boolean data) {
-                                Toast.makeText(mContext,"指示灯操作结果:"+data,Toast.LENGTH_LONG).show();
-                            }
+                      new Thread(new Runnable() {
+                          @Override
+                          public void run() {
+                              hidCmd.setLight(which == 0, new Callback<Boolean>() {
+                                  @Override
+                                  public void onSuccess(@NonNull @NotNull Boolean data) {
+                                      Toast.makeText(mContext,"指示灯操作结果:"+data,Toast.LENGTH_LONG).show();
+                                  }
 
-                            @Override
-                            public void onFailure(ErrorCode errorCode) {
-                                Toast.makeText(mContext,"指示灯操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                  @Override
+                                  public void onFailure(ErrorCode errorCode) {
+                                      Toast.makeText(mContext,"指示灯操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
+                                  }
+                              });
+                          }
+                      }).start();
                     }
                 });
                 listDialog.show();

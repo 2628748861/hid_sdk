@@ -3,6 +3,7 @@ package com.wangxiaobao.sdk.hid.engine;
 import android.content.Context;
 import android.hardware.usb.*;
 import android.os.Handler;
+import android.os.Looper;
 import com.wangxiaobao.sdk.hid.engine.request.RequestData;
 import com.wangxiaobao.sdk.hid.engine.response.ResponseData;
 import com.wangxiaobao.sdk.hid.engine.task.Task;
@@ -13,12 +14,13 @@ public class HidEngine {
     private UsbDevice usbDevice;
     private UsbManager usbManager;
     private TaskManager taskManager;
-    private Handler handler=new Handler();
+    private Handler handler;
 
     public HidEngine(Context mContext, UsbDevice usbDevice) {
         this.usbDevice = usbDevice;
         this.usbManager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
         this.taskManager=new TaskManager(this);
+        this.handler=new Handler(Looper.getMainLooper());
     }
 
     public <T> void send(RequestData requestData, CallBackHandler<T> callBackHandler){
