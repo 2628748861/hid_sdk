@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mContext=this;
         setContentView(R.layout.activity_main);
 
+        TextView t=findViewById(R.id.time);
+        Date date=new Date();
+        t.setText("时间戳:"+date.getTime()+",格式化:"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
         //注册广播,监听USB插入和拔出
@@ -63,7 +68,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
         findViewById(R.id.resumeFactoryLayout).setOnClickListener(this);
         findViewById(R.id.wifiLayout).setOnClickListener(this);
         findViewById(R.id.wifiConnectLayout).setOnClickListener(this);
-        findViewById(R.id.currentWifiLayout).setOnClickListener(this);
         findViewById(R.id.testMicLayout).setOnClickListener(this);
         findViewById(R.id.testLightLayout).setOnClickListener(this);
 
@@ -99,6 +103,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     break;
                 case UsbManager.ACTION_USB_DEVICE_DETACHED://USB设备拔出广播
                     logMessage("USB设备拔出");
+                    if(hidCmd!=null)
+                        hidCmd.clear();
                     break;
             }
         }
@@ -128,7 +134,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             return;
         }
         hidCmd=new HidCmd(mContext,usbDevice);
-
         hidCmd.getSn(new Callback<String>() {
             @Override
             public void onSuccess(@NonNull @NotNull String data) {
@@ -143,6 +148,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         hidCmd.getTime(new Callback<String>() {
             @Override
             public void onSuccess(@NonNull @NotNull String data) {
+//                timeTv.setText(data);
                 timeTv.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(Long.parseLong(data)*1000l)));
             }
 
@@ -363,10 +369,73 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 });
                 break;
             case R.id.wifiLayout:
+
+                new AlertDialog.Builder(MainActivity.this)
+                .setTitle("请选择WIFI操作类型")
+                .setItems(new String[]{ "打开WIFI","关闭WIFI"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        hidCmd.setLight(which == 0, new Callback<Boolean>() {
+                            @Override
+                            public void onSuccess(@NonNull @NotNull Boolean data) {
+                                Toast.makeText(mContext,"WIFI操作结果:"+data,Toast.LENGTH_LONG).show();
+                            }
+                            @Override
+                            public void onFailure(ErrorCode errorCode) {
+                                Toast.makeText(mContext,"WIFI操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                })
+                .show();
                 break;
             case R.id.wifiConnectLayout:
-                break;
-            case R.id.currentWifiLayout:
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("请选择WIFI的操作类型")
+                        .setItems(new String[]{ "连接WIFI","断开WIFI"}, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int parentWhich) {
+                                dialog.dismiss();
+                                final ViewGroup viewGroup=(ViewGroup) getLayoutInflater().inflate(R.layout.wifi_layout,null,false);
+                                EditText ssidEditTv=viewGroup.findViewById(R.id.ssidEditTv);
+                                EditText passwordEditTv=viewGroup.findViewById(R.id.passwordEditTv);
+                                new AlertDialog.Builder(mContext)
+                                        .setTitle("提示")
+                                        .setView(viewGroup)
+                                        .setMessage("请输入WIFI信息")
+                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+
+
+                                            }
+                                        })
+                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                String ssid=ssidEditTv.getText().toString();
+                                                String password=passwordEditTv.getText().toString();
+                                                if(TextUtils.isEmpty(ssid))
+                                                    return;
+                                                hidCmd.connectWifi(parentWhich==0,ssid, password, new Callback<Boolean>() {
+                                                    @Override
+                                                    public void onSuccess(@NonNull @NotNull Boolean data) {
+                                                        Toast.makeText(mContext,"WIFI操作结果:"+data,Toast.LENGTH_LONG).show();
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(ErrorCode errorCode) {
+                                                        Toast.makeText(mContext,"WIFI操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                            }
+                                        })
+                                        .show();
+                            }
+                        })
+                        .show();
                 break;
         }
     }

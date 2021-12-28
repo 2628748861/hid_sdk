@@ -9,12 +9,27 @@ import com.wangxiaobao.sdk.hid.engine.Callback;
 import com.wangxiaobao.sdk.hid.engine.HidEngine;
 import com.wangxiaobao.sdk.hid.engine.OpCode;
 import com.wangxiaobao.sdk.hid.engine.request.RequestData;
+import com.wangxiaobao.sdk.hid.engine.task.TaskManager;
+import com.wangxiaobao.sdk.hid.utils.LogUtil;
 
 public class HidCmd implements IHidCmd{
 
     private HidEngine hidEngine;
     public HidCmd(Context mContext, UsbDevice usbDevice){
         this.hidEngine =new HidEngine(mContext,usbDevice);
+    }
+
+    @Override
+    public void clear() {
+        this.hidEngine.clear();
+    }
+
+    @Override
+    public void invalid(Callback<String> callback) {
+        this.hidEngine.send(
+                new RequestData.Builder()
+                        .cmd(OpCode.CMD_INVALID)
+                        .build(),new CallBackHandler(callback,new StringAdapter()));
     }
 
     @Override
@@ -130,10 +145,17 @@ public class HidCmd implements IHidCmd{
     }
 
     @Override
-    public void connectWifi(String ssid, String password,Callback<Boolean> callback) {
+    public void connectWifi(boolean connect,String ssid, String password,Callback<Boolean> callback) {
+
+        byte[] b=connect?(ssid+","+password).getBytes():ssid.getBytes();
+        byte[] playload=new byte[b.length+1];
+        playload[0] = (byte) (connect? 0x31 : 0x30);
+        System.arraycopy(b,0,playload,1,b.length);
+
+
         this.hidEngine.send(new RequestData.Builder()
                 .cmd(OpCode.CMD_CONNECT_WIFI)
-                .payload((ssid+","+password).getBytes())
+                .payload(playload)
                 .build(),new CallBackHandler(callback,new BooleanAdapter()));
     }
 

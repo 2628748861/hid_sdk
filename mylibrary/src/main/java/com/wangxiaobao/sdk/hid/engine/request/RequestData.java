@@ -15,18 +15,6 @@ public class RequestData {
         }
     }
 
-    public byte[] getData() {
-        return data;
-    }
-
-    public int getDataLength() {
-        return dataLength;
-    }
-
-    public int getOpCode() {
-        return opCode;
-    }
-
     public byte[] getByteData() {
         byte[] result = new byte[dataLength==0?1+3:dataLength+3];
         result[0] = (byte) (0x00ff & OP_HEAD);

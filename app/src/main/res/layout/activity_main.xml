@@ -8,6 +8,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+        <TextView android:id="@+id/time" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
         <RelativeLayout
                 android:id="@+id/snLayout"
                 android:padding="10dp"
@@ -43,70 +44,6 @@
             <TextView
                     android:layout_centerVertical="true"
                     android:id="@+id/timeTv"
-                    tools:text="123"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-        </RelativeLayout>
-        <View
-                android:background="@color/teal_200"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"/>
-        <RelativeLayout
-                android:id="@+id/lightLayout"
-                android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:text="指示灯控制"
-                    android:layout_centerVertical="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:id="@+id/lightTv"
-                    android:layout_centerVertical="true"
-                    tools:text="123"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-        </RelativeLayout>
-        <View
-                android:background="@color/teal_200"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"/>
-        <RelativeLayout
-                android:id="@+id/rebootLayout"
-                android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:text="设备重启"
-                    android:layout_centerVertical="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:layout_centerVertical="true"
-                    tools:text="123"
-                    android:layout_alignParentRight="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-        </RelativeLayout>
-        <View
-                android:background="@color/teal_200"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"/>
-        <RelativeLayout
-                android:id="@+id/resumeFactoryLayout"
-                android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <TextView
-                    android:text="恢复出厂设置"
-                    android:layout_centerVertical="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:layout_centerVertical="true"
                     tools:text="123"
                     android:layout_alignParentRight="true"
                     android:layout_width="wrap_content"
@@ -172,6 +109,70 @@
                     android:layout_height="wrap_content"/>
             <TextView
                     android:id="@+id/macTv"
+                    android:layout_centerVertical="true"
+                    tools:text="123"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </RelativeLayout>
+        <View
+                android:background="@color/teal_200"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"/>
+        <RelativeLayout
+                android:id="@+id/lightLayout"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:text="指示灯控制"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:id="@+id/lightTv"
+                    android:layout_centerVertical="true"
+                    tools:text="123"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </RelativeLayout>
+        <View
+                android:background="@color/teal_200"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"/>
+        <RelativeLayout
+                android:id="@+id/rebootLayout"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:text="设备重启"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
+                    android:layout_centerVertical="true"
+                    tools:text="123"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </RelativeLayout>
+        <View
+                android:background="@color/teal_200"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"/>
+        <RelativeLayout
+                android:id="@+id/resumeFactoryLayout"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:text="恢复出厂设置"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <TextView
                     android:layout_centerVertical="true"
                     tools:text="123"
                     android:layout_alignParentRight="true"

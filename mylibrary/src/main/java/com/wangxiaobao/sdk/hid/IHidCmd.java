@@ -5,6 +5,9 @@ import com.wangxiaobao.sdk.hid.engine.Callback;
 public interface IHidCmd {
 
 
+    void clear();
+
+    void invalid(Callback<String> callback);
 
     /**
      * 设置sn号
@@ -75,11 +78,12 @@ public interface IHidCmd {
 
     /**
      * 连接到指定wifi
+     * @param connect 是否连接
      * @param ssid wifi名称
      * @param password wifi密码
      * @return 连接成功/失败
      */
-    void connectWifi(String ssid,String password,Callback<Boolean> callback);
+    void connectWifi(boolean connect,String ssid,String password,Callback<Boolean> callback);
 
 
     /**

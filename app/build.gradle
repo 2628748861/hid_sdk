@@ -15,10 +15,22 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -31,5 +43,5 @@ android {
 dependencies {
     implementation 'me.jahnen:libaums:0.8.0'
     implementation project(path: ':mylibrary')
-//    implementation 'com.github.2628748861:hid_sdk:1.0.1'
+//    implementation 'com.github.2628748861:hid_sdk:1.0.2'
 }

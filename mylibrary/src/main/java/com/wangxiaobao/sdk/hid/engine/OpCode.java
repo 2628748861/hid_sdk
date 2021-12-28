@@ -1,6 +1,7 @@
 package com.wangxiaobao.sdk.hid.engine;
 
 public class OpCode {
+    public static final int CMD_INVALID=0xff;
     public static final int CMD_SET_TIME=0x0e;
     public static final int CMD_GET_TIME=0x0f;
     public static final int CMD_SET_SN=0x1f;
