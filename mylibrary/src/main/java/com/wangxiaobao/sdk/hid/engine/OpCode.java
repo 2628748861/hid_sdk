@@ -14,7 +14,7 @@ public class OpCode {
     public static final int CMD_GET_BLE_MAC=0x22;
     public static final int CMD_OPEN_WIFI=0x1c;
     public static final int CMD_CONNECT_WIFI=0x1d;
-    public static final int CMD_get_WIFI=0x23;
+    public static final int CMD_GET_WIFI=0x23;
     public static final int CMD_MIC_TEST=0x24;
     public static final int CMD_LIGHT_TEST=0x25;
 }

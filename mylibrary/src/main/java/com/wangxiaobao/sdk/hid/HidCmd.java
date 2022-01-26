@@ -3,6 +3,7 @@ package com.wangxiaobao.sdk.hid;
 import android.content.Context;
 import android.hardware.usb.UsbDevice;
 import com.wangxiaobao.sdk.hid.engine.adapter.BooleanAdapter;
+import com.wangxiaobao.sdk.hid.engine.adapter.StrAdapter;
 import com.wangxiaobao.sdk.hid.engine.adapter.StringAdapter;
 import com.wangxiaobao.sdk.hid.engine.CallBackHandler;
 import com.wangxiaobao.sdk.hid.engine.Callback;
@@ -133,7 +134,7 @@ public class HidCmd implements IHidCmd{
         //todo 已验证  (有问题，当没有蓝牙连接时,返回错误码位01)
         this.hidEngine.send(new RequestData.Builder()
                 .cmd(OpCode.CMD_GET_BLE_MAC)
-                .build(),new CallBackHandler(callback,new StringAdapter()));
+                .build(),new CallBackHandler(callback,new StrAdapter()));
     }
 
     @Override
@@ -147,22 +148,21 @@ public class HidCmd implements IHidCmd{
     @Override
     public void connectWifi(boolean connect,String ssid, String password,Callback<Boolean> callback) {
 
-        byte[] b=connect?(ssid+","+password).getBytes():ssid.getBytes();
-        byte[] playload=new byte[b.length+1];
-        playload[0] = (byte) (connect? 0x31 : 0x30);
-        System.arraycopy(b,0,playload,1,b.length);
-
+        byte[] b=connect?(ssid+","+password).getBytes():(ssid+",").getBytes();
+        byte[] payload=new byte[b.length+1];
+        payload[0] = (byte) (connect? 0x31 : 0x30);
+        System.arraycopy(b,0,payload,1,b.length);
 
         this.hidEngine.send(new RequestData.Builder()
                 .cmd(OpCode.CMD_CONNECT_WIFI)
-                .payload(playload)
+                .payload(payload)
                 .build(),new CallBackHandler(callback,new BooleanAdapter()));
     }
 
     @Override
     public void getCurrenWifi(Callback<String> callback) {
         this.hidEngine.send(new RequestData.Builder()
-                .cmd(OpCode.CMD_get_WIFI)
+                .cmd(OpCode.CMD_GET_WIFI)
                 .build(),new CallBackHandler(callback,new StringAdapter()));
     }
 

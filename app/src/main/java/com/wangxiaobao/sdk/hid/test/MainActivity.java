@@ -21,6 +21,7 @@ import com.wangxiaobao.sdk.hid.engine.ErrorCode;
 import com.wangxiaobao.sdk.hid.utils.HexUtil;
 import com.wangxiaobao.sdk.hid.HidCmd;
 import com.wangxiaobao.sdk.hid.utils.LogUtil;
+import com.wangxiaobao.sdk.hid.utils.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -126,6 +127,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     initCmd(usbDevice);
                 }
             }).start();
+//            hidCmd=new HidCmd(mContext,usbDevice);
+//            hidCmd.getSn(new Callback<String>() {
+//                @Override
+//                public void onSuccess(@NonNull @NotNull String data) {
+//                    snTv.setText(data);
+//                }
+//
+//                @Override
+//                public void onFailure(ErrorCode errorCode) {
+//                    snTv.setText("失败:"+errorCode.getMessage());
+//                }
+//            });
         }
     }
 
@@ -188,7 +201,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         hidCmd.getMac(new Callback<String>() {
             @Override
             public void onSuccess(@NonNull @NotNull String data) {
-                macTv.setText(data);
+                macTv.setText(StringUtil.formatMac(data,":").toUpperCase());
             }
 
             @Override
@@ -340,17 +353,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 });
                 break;
             case R.id.resumeFactoryLayout:
-                hidCmd.resumeFactory(new Callback<Boolean>() {
-                    @Override
-                    public void onSuccess(@NonNull @NotNull Boolean data) {
-                        Toast.makeText(mContext,"恢复出厂设置:"+data,Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onFailure(ErrorCode errorCode) {
-                        Toast.makeText(mContext,"恢复出厂设置失败:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
-                    }
-                });
+//                hidCmd.resumeFactory(new Callback<Boolean>() {
+//                    @Override
+//                    public void onSuccess(@NonNull @NotNull Boolean data) {
+//                        Toast.makeText(mContext,"恢复出厂设置:"+data,Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(ErrorCode errorCode) {
+//                        Toast.makeText(mContext,"恢复出厂设置失败:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
+//                    }
+//                });
                 break;
             case R.id.testMicLayout:
                 hidCmd.testMic(new Callback<Boolean>() {
@@ -383,21 +396,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 new AlertDialog.Builder(MainActivity.this)
                 .setTitle("请选择WIFI操作类型")
-                .setItems(new String[]{ "打开WIFI","关闭WIFI"}, new DialogInterface.OnClickListener() {
+                .setItems(new String[]{ "打开WIFI","关闭WIFI"}, (dialog, which) -> hidCmd.wifi(which == 0, new Callback<Boolean>() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        hidCmd.setLight(which == 0, new Callback<Boolean>() {
-                            @Override
-                            public void onSuccess(@NonNull @NotNull Boolean data) {
-                                Toast.makeText(mContext,"WIFI操作结果:"+data,Toast.LENGTH_LONG).show();
-                            }
-                            @Override
-                            public void onFailure(ErrorCode errorCode) {
-                                Toast.makeText(mContext,"WIFI操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
-                            }
-                        });
+                    public void onSuccess(@NonNull @NotNull Boolean data) {
+                        Toast.makeText(mContext,"WIFI操作结果:"+data,Toast.LENGTH_LONG).show();
                     }
-                })
+                    @Override
+                    public void onFailure(ErrorCode errorCode) {
+                        Toast.makeText(mContext,"WIFI操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                }))
                 .show();
                 break;
             case R.id.wifiConnectLayout:
@@ -415,33 +423,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                         .setTitle("提示")
                                         .setView(viewGroup)
                                         .setMessage("请输入WIFI信息")
-                                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
+                                        .setNegativeButton("取消", (dialog1, which) -> dialog1.dismiss())
+                                        .setPositiveButton("确定", (dialog12, which) -> {
+                                            String ssid=ssidEditTv.getText().toString();
+                                            String password=passwordEditTv.getText().toString();
+                                            if(TextUtils.isEmpty(ssid))
+                                                return;
+                                            hidCmd.connectWifi(parentWhich==0,ssid, password, new Callback<Boolean>() {
+                                                @Override
+                                                public void onSuccess(@NonNull @NotNull Boolean data) {
+                                                    Toast.makeText(mContext,"WIFI操作结果:"+data,Toast.LENGTH_LONG).show();
+                                                    hidCmd.getCurrenWifi(new Callback<String>() {
+                                                        @Override
+                                                        public void onSuccess(@NonNull @NotNull String data) {
+                                                            currentWifiTv.setText(data);
+                                                        }
 
-
-                                            }
-                                        })
-                                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                String ssid=ssidEditTv.getText().toString();
-                                                String password=passwordEditTv.getText().toString();
-                                                if(TextUtils.isEmpty(ssid))
-                                                    return;
-                                                hidCmd.connectWifi(parentWhich==0,ssid, password, new Callback<Boolean>() {
-                                                    @Override
-                                                    public void onSuccess(@NonNull @NotNull Boolean data) {
-                                                        Toast.makeText(mContext,"WIFI操作结果:"+data,Toast.LENGTH_LONG).show();
-                                                    }
-
-                                                    @Override
-                                                    public void onFailure(ErrorCode errorCode) {
-                                                        Toast.makeText(mContext,"WIFI操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
-                                            }
+                                                        @Override
+                                                        public void onFailure(ErrorCode errorCode) {
+                                                            currentWifiTv.setText("失败:"+errorCode.getMessage());
+                                                        }
+                                                    });
+                                                }
+                                                @Override
+                                                public void onFailure(ErrorCode errorCode) {
+                                                    Toast.makeText(mContext,"WIFI操作异常:"+errorCode.getMessage(),Toast.LENGTH_LONG).show();
+                                                }
+                                            });
                                         })
                                         .show();
                             }
