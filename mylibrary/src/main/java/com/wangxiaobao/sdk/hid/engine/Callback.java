@@ -1,13 +1,12 @@
 package com.wangxiaobao.sdk.hid.engine;
 
-import androidx.annotation.NonNull;
 
 public interface Callback<T> {
     /**
      * 执行成功
      * @param data
      */
-    void onSuccess(@NonNull T data);
+    void onSuccess( T data);
 
     /**
      * 执行失败

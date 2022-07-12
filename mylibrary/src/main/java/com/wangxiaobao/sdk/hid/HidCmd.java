@@ -70,6 +70,22 @@ public class HidCmd implements IHidCmd{
                 .build(),new CallBackHandler(callback,new StringAdapter()));
     }
 
+
+    @Override
+    public boolean setTimeSync(long unixTimestamp) throws Exception {
+        return this.hidEngine.sendCmdSync(new RequestData.Builder()
+                .cmd(OpCode.CMD_SET_TIME)
+                .payload((unixTimestamp+"").getBytes())
+                .build(),new BooleanAdapter());
+    }
+
+    @Override
+    public String getTimeSync() throws Exception {
+        return this.hidEngine.sendCmdSync(new RequestData.Builder()
+                .cmd(OpCode.CMD_GET_TIME)
+                .build(),new StringAdapter());
+    }
+
     @Override
     public void reboot(Callback<Boolean> callback) {
         //todo 已验证

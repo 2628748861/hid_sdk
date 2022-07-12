@@ -34,6 +34,18 @@ public interface IHidCmd {
      */
     void getTime(Callback<String> callback) ;
 
+
+    /**
+     * 设置工牌时间(同步)
+     * @return 返回设置结果
+     */
+    boolean setTimeSync(long unixTimestamp) throws Exception;
+
+    /**
+     * 获取工牌时间(同步)
+     * @return 返回工牌时间
+     */
+    String getTimeSync() throws Exception;
     /**
      * 设置工牌复位(重启)
      */

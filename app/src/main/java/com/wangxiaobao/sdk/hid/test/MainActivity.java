@@ -164,6 +164,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 snTv.setText("失败:"+errorCode.getMessage());
             }
         });
+
+        try {
+            String syncTime=hidCmd.getTimeSync();
+            logMessage("同步获取到的时间:"+syncTime);
+        } catch (Exception e) {
+            logMessage("同步获取时间异常");
+            e.printStackTrace();
+        }
+        try {
+            boolean b=hidCmd.setTimeSync(new Date().getTime()/1000);
+            logMessage("同步设置时间:"+b);
+        } catch (Exception e) {
+            logMessage("同步设置时间异常");
+            e.printStackTrace();
+        }
+
+
         hidCmd.getTime(new Callback<String>() {
             @Override
             public void onSuccess(@NonNull @NotNull String data) {
